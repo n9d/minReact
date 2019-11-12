@@ -13,7 +13,7 @@
 
 ** 仮想DOMを認識しよう
 
-[[file:react.html][PureComponent]]
+[[file:purecomponent.html][PureComponent]]
 
 - コンソールで確認すると、レンダリングの回数が理解できる
 
