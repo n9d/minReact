@@ -1,0 +1,60 @@
+* minReact
+
+- 最小の構成で react(redux/saga) を実験する
+
+
+* babel
+
+ [[file:babel.html][babelでhelloworld]]
+
+- jsxがbabelを必要とするため必要
+
+* react
+
+** 仮想DOMを認識しよう
+
+[[file:react.html][PureComponent]]
+
+- コンソールで確認すると、レンダリングの回数が理解できる
+
+* redux
+
+* redux-saga
+
+
+* ライブラリ抽出
+
+- umd系の物を持ってくればいい
+- 下記一連の作業で最小の必要なものが./lib以下に置かれる
+
+** babel
+
+
+#+BEGIN_SRC sh :exports both
+mkdir lib
+npm init -y
+npm install babel-standalone
+cp node_modules/babel-standalone/babel.js lib
+#+END_SRC
+
+** react
+
+#+BEGIN_SRC sh :exports both
+npm install react react-dom
+cp node_modules/react/umd/react.development.js lib
+cp node_modules/react-dom/umd/react-dom.production.min.js lib
+#+END_SRC
+
+** redux
+
+#+BEGIN_SRC sh :exports both
+npm install redux
+cp node_modules/redux/dist/redux.min.js lib
+#+END_SRC
+
+** redux-saga
+
+#+BEGIN_SRC sh :exports both
+npm install redux-saga
+cp node_modules/redux-saga/dist/redux-saga.umd.min.js lib
+#+END_SRC

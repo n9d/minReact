@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>はじめてのhelloworld(react.js)</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="lib/babel.min.js"></script>
+  <script src="lib/react.production.min.js"></script>
+  <script src="lib/react-dom.production.min.js"></script>
+  <script type="text/babel">
+
+    // ブラウザのコンソール(Ctrl+I)を開いて
+    // このclass定義のコメントを入れ替えるとreactの真の凄さがわかる
+
+    class BC extends React.Component {
+      constructor(props:{}){
+        super(props);
+      }
+      componentDidMount(){
+        console.log(`${this.constructor.name} Mount`);
+      }
+      componentDidUpdate(){
+        console.log(`${this.constructor.name} Update`);
+      }
+      componentWillUnmount(){
+        console.log(`${this.constructor.name} Unmunt`);
+      }
+    }
+
+    class PC extends React.PureComponent {
+      constructor(props:{}){
+        super(props);
+      }
+      componentDidMount(){
+        console.log(`${this.constructor.name} Mount`);
+      }
+      componentDidUpdate(){
+        console.log(`${this.constructor.name} Update`);
+      }
+      componentWillUnmount(){
+        console.log(`${this.constructor.name} Unmunt`);
+      }
+    }
+
+    class Tag1 extends BC{
+      constructor(props:{}){
+        super(props);
+      }
+      render(){
+        return (
+          <div class='Tag1'>
+            <h1>Tag1</h1>
+            <div>{this.props.a}</div>
+            <Tag2 {...this.props}/>
+          </div>
+        );
+      }
+    }
+
+    class Tag2 extends PC{
+      constructor(props:{}){
+        super(props);
+      }
+      render(){
+        return (
+          <div>
+            <h2>Tag2</h2>
+            <div>{this.props.a}</div>
+            <Tag3 {...this.props}/>
+          </div>
+        )
+      }
+    }
+
+    class Tag3 extends BC{
+      constructor(props:{}){
+        super(props);
+      }
+      render(){
+        return (
+          <div>
+            <h3>Tag3</h3>
+            <div>{this.props.a}</div>
+          </div>
+        )
+      }
+    }
+
+    const p = {a:"helloworld"};
+
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+
+  </script>
+</body>
+</html>
