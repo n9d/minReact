@@ -19,6 +19,10 @@
 
 * redux
 
+[[file:redux.html][Redux]]
+
+- コンソールで確認すると、storeの変遷が見れる
+
 * redux-saga
 
 
