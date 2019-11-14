@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>はじめてのhelloworld(react.js)</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.10.2/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.10.2/umd/react-dom.production.min.js"></script>
+  <script type="text/babel">
+    class HelloWorld extends React.Component{
+      render(){
+        return (
+          <div>
+            <h2>Hello, World!!</h2>
+            <p>hello, worldできました</p>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(
+      <HelloWorld />,
+      document.getElementById("app")
+    );
+  </script>
+</body>
+</html>

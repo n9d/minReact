@@ -9,8 +9,8 @@
 
   <p>コンソールを開いて確認すること</p>
 
-  <script src="lib/redux.min.js"></script>
-  <script src="lib/redux-saga.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.4/redux.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux-saga/1.0.5/redux-saga.umd.min.js"></script>
 
   <script type="text/javascript">
     /*  //nodeでやるときにはこちら
@@ -62,17 +62,15 @@
         switch (action.type) {
             case "TIME_INCREMENT":
                 console.log(`wait ${ms}. INCREMENT ${val}`)
-                // promiseの結果を受け取れることがcallの最大のメリット
                 data = yield call(() => wait(ms).then(_ => action.value));
                 // data=yield call(wait,1000) //こっちでもいい
-                console.log(`TIME_INCREMENT now ! ${val}`);
-                // putはディスパッチャを呼べる
+                console.log(`TIME_INCREMENT now ! ${data}`);
                 yield put({type: "INCREMENT", value:data})
                 return;
             case "TIME_DECREMENT":
                 console.log(`wait ${ms}. DECREMENT ${val}`)
                 data = yield call(() => wait(ms).then(_ => action.value));
-                console.log(`TIME_DECREMENT now ! ${val}`);
+                console.log(`TIME_DECREMENT now ! ${data}`);
                 yield put({type: "DECREMENT", value:data})
                 return;
         }
