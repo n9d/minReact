@@ -2,6 +2,7 @@
 
 - 最小の構成で react(redux/saga) を実験する
 
+- [[https://n9d.github.io/minReact/][ここ]]で確認できる
 
 * babel
 
