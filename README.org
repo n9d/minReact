@@ -21,9 +21,32 @@
 
 [[file:redux.html][Redux]]
 
-- コンソールで確認すると、storeの変遷が見れる
+- コンソールで開いた後リロードして確認すると、storeの変遷が見れる
+- コンソールで src_<js>{Redux} を評価すると reduxが持っているメソッド一覧が確認できる（以下５つ）
+
+- combineReducers :: reducer合成用
+- createStore :: store作成用
+- applyMiddleware ::  sagaを使うときに使う
+- bindActionCreators :: （使ったこと無い）
+- compose :: (使ったこと無い)
 
 * redux-saga
+
+[[file:saga.html][Redux-Saga]]
+
+- コンソールで開いた後リロードして確認すると、storeの変遷が見れる
+- コンソールで src_<js>{ReduxSaga} を評価すると redux-sagaが持っているメソッド一覧が確認できる
+
+- runSaga :: これぐらいしか使わない
+- channel :: (使ったこと無い)
+- default :: nodeで使うときには createSagaMiddleware となる
+- detach :: (使ったこと無い)
+- effects :: put,call,take等の関数が入っている
+- eventChannel :: (使ったこと無い)
+- isEnd :: (使ったこと無い)
+- multicastChannel :: (使ったこと無い)
+- stdChannel ::  (使ったこと無い)
+
 
 
 * ライブラリ抽出

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>redux-saga</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <p>コンソールを開いて確認すること</p>
+
+  <script src="lib/redux.min.js"></script>
+  <script src="lib/redux-saga.umd.min.js"></script>
+
+  <script type="text/javascript">
+    /*  //nodeでやるときにはこちら
+    import { createStore } from 'redux'
+    import { Action, applyMiddleware, combineReducers, createStore } from "redux";
+    import createSagaMiddleware from "redux-saga";
+    import { call, put, takeEvery } from "@redux-saga/core/effects";
+    */
+    let applyMiddleware=Redux.applyMiddleware
+    let createStore=Redux.createStore
+    let combineReducers=Redux.combineReducers
+    let createSagaMiddleware=ReduxSaga.default  //https://github.com/redux-saga/redux-saga/blob/master/README_ja.md
+    let call=ReduxSaga.effects.call
+    let put=ReduxSaga.effects.put
+    let takeEvery=ReduxSaga.effects.takeEvery
+
+    // timerをPromiseで実装しておく
+    // fetchはデフォルトでPromiseを返すのでこんなことしなくていい
+    const wait = (ms) =>
+        new Promise((resolve, reject) =>
+            setTimeout(resolve, ms)
+        );
+
+    // reducer作成
+    function countReducer(state=0, action) {
+        const val = action.value ? action.value : 1;
+        switch (action.type) {
+            case "INCREMENT":
+                console.log(`INCREMENT ${val}`)
+                return state + val;
+            case "DECREMENT":
+                console.log(`DECREMENT ${val}`)
+                return state - val;
+            default:
+                return state;
+        }
+    }
+
+    // combineReducers
+    const allReducer = combineReducers({
+        counter: countReducer
+    });
+
+    // saga作成
+    function* timerCounter(action) {
+        const ms = action.time ? action.time : 1000;
+        const val = action.value ? action.value : 1;
+        let data;
+        switch (action.type) {
+            case "TIME_INCREMENT":
+                console.log(`wait ${ms}. INCREMENT ${val}`)
+                data = yield call(() => wait(ms).then(_ => action.value));
+                // data=yield call(wait,1000) //こっちでもいい
+                console.log(`TIME_INCREMENT now ! ${val}`);
+                yield put({type: "INCREMENT", value:data})
+                return;
+            case "TIME_DECREMENT":
+                console.log(`wait ${ms}. DECREMENT ${val}`)
+                data = yield call(() => wait(ms).then(_ => action.value));
+                console.log(`TIME_DECREMENT now ! ${val}`);
+                yield put({type: "DECREMENT", value:data})
+                return;
+        }
+    }
+
+    // イベントループ登録処理
+    // action.typeがhitする場合処理する
+    // takeEveryは該当するイベントをすべて拾う
+    function* mySaga() {
+        yield takeEvery(
+            [
+                "TIME_INCREMENT",
+                "TIME_DECREMENT",
+            ],
+            timerCounter
+        );
+    }
+
+    // Saga ミドルウェアを作成する
+    const sagaMiddleware = createSagaMiddleware();
+    const middlewares = applyMiddleware(sagaMiddleware);
+
+    // ストアの作成 sagaもstoreに登録
+    let store = createStore(allReducer, middlewares);
+
+    // Saga を起動する
+    // actionがdispatchされるとreducerの前に差し込まれて
+    // saga -> reducer の順で実行される
+    sagaMiddleware.run(mySaga);
+
+    // reduxのsatate監視
+    // stateの値が更新されるごとにsubscribeが実行される (reactならrenderを入れる)
+    store.subscribe(() => console.log(store.getState()));
+
+    const main = () => {
+        store.dispatch({ type: "TIME_INCREMENT", value: 5 ,time:2000});
+        store.dispatch({ type: "INCREMENT", value: 1 });
+        store.dispatch({ type: "TIME_DECREMENT", value: 3 ,time:1000});
+        store.dispatch({ type: "INCREMENT", value: 2 });
+        store.dispatch({ type: "DECREMENT", value: 1 });
+        store.dispatch({ type: "INCREMENT", value: 3 });
+    };
+    main();
+  </script>
+</body>
+</html>
