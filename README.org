@@ -2,7 +2,19 @@
 
 - 最小の構成で react(redux/saga) を実験する
 
+* 実験環境
+
+** github-pages
+
 - [[https://n9d.github.io/minReact/][ここ]]で確認できる
+
+** local
+
+- git clone した後 何らかの形でローカルHTTPサーバを立ち上げる
+	- `brew install  http-server` でインストールした http-serverを実行するか
+	- `npm install -g httpserver` でインストールした httpserverを実行するか
+	- `python -m http.server 3000` で実行
+	- npx serve で良さそうな気もする
 
 * babel
 
@@ -11,6 +23,9 @@
 - jsxがbabelを必要とするため必要
 
 * react
+** jsxなし
+
+[[file:non-jsx.html][jsxなしreact]]
 
 ** 仮想DOMを認識しよう
 

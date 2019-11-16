@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>PureComponent(React)</title>
+  <link rel="stylesheet" type="text/css" href="lib/semantic.min.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div onclick="console.log('parent')">
+    あああ
+    <div onclick="console.log('child')">
+      いいい
+    </div>
+  </div>
+  <script src="lib/babel.min.js"></script>
+  <script src="lib/react.production.min.js"></script>
+  <script src="lib/react-dom.production.min.js"></script>
+  <script src="lib/semantic-ui-react.min.js"></script>
+  <script type="text/babel">
+    const Button=semanticUIReact.Button
+    const Tag1=({a,b})=>(
+      <div>
+        <h1>test</h1>
+        <p>{a}</p>
+        <Button>OK</Button>
+        <Button>NG</Button>
+      </div>
+    );
+
+    const Tag2=()=>(
+      <div></div>
+    );
+
+    const MyButton=()=>(
+      <div>GET</div>
+    );
+
+    const p = {a:"helloworld"};
+
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+
+  </script>
+</body>
+</html>

@@ -7,10 +7,9 @@
 <body>
   <div id="app"></div>
 
-  <script src="lib/babel.min.js"></script>
   <script src="lib/react.production.min.js"></script>
   <script src="lib/react-dom.production.min.js"></script>
-  <script type="text/babel">
+  <script type="text/javascript">
 
     class BC extends React.Component {
       constructor(props){
@@ -47,50 +46,12 @@
         super(props);
       }
       render(){
-        return (
-          <div class='Tag1'>
-            <h1>Tag1</h1>
-            <div>{this.props.a}</div>
-            <Tag2 {...this.props}/>
-          </div>
-        );
-      }
-    }
-
-    class Tag2 extends PC{
-      constructor(props){
-        super(props);
-      }
-      render(){
-        return (
-          <div>
-            <h2>Tag2</h2>
-            <div>{this.props.a}</div>
-            <Tag3 {...this.props}/>
-          </div>
-        )
-      }
-    }
-
-    class Tag3 extends BC{
-      constructor(props){
-        super(props);
-      }
-      render(){
-        return (
-          <div>
-            <h3>Tag3</h3>
-            <div>{this.props.a}</div>
-          </div>
-        )
+        return React.createElement('div', null, `aaa ${this.props.a} bbb`);
       }
     }
 
     const p = {a:"helloworld"};
-
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(React.createElement(Tag1, {...p}, null), document.getElementById("app"));
 
   </script>
 </body>
