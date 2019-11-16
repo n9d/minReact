@@ -48,12 +48,7 @@
 - createStore :: store作成用
 - applyMiddleware ::  sagaを使うときに使う
 
-
-* React-Redux
-
-
-
-* redux-saga
+* Redux-Saga
 
 [[file:saga.html][Redux-Saga]]
 
@@ -64,15 +59,35 @@
 - default :: nodeで使うときには createSagaMiddleware となる
 - effects :: put,call,take等の関数が入っている
 
+* React-Redux
+
+** 最小構成
+
+[[file:react-redux-render-with-babel.html][React-Redux]]
+
+- 本当はデバッグ（ブラウザ上でのブレイクポイント設置）の観点からbabelを抜きたかったが、Providerの使い方がわからない
+- コンソールで開いた後リロードして確認すると、レンダリングのタイミング及びstoreの変遷が見れる
+- コンソールで =ReactRedux= を評価すると react-reduxが持っているメソッド一覧が確認できる
+
+- Provider :: React.Componentのトップにコレをかぶせる
+- connect :: 引数にReact.Componentを取り、第１引数にstoreの写像を行う関数,第２引数にディスパッチャの写像を行う関数を指定することにより、propsにそれらをマッピングした新しい React.Componentを出力する
+
+** propsオーバーライド
+
+[[file:props-override.html][props-override]]
+
+- ReactRedux.connectの機能によりマッピングされた値はコンポーネントが本来保持する同名のpropsを上書きする
+- このことはそのコンポーネントが単独で動作することを確認した後、reduxへ組み込むことができることを意味し、コンポーネントのモジュール性を向上させる
+- Tag3Aloneがきちんと動かないのでまだ途中
 
 
 * ライブラリ抽出
 
 - umd系の物を持ってくればいい
 - 下記一連の作業で最小の必要なものが./lib以下に置かれる
+- そのへんのCDNに転がっているやつは古いことが多いので・・・
 
 ** babel
-
 
 #+BEGIN_SRC sh :exports both
 mkdir lib
@@ -85,7 +100,7 @@ cp node_modules/babel-standalone/babel.js lib
 
 #+BEGIN_SRC sh :exports both
 npm install react react-dom
-cp node_modules/react/umd/react.development.js lib
+cp node_modules/react/umd/react.production.min.js lib
 cp node_modules/react-dom/umd/react-dom.production.min.js lib
 #+END_SRC
 
@@ -101,4 +116,11 @@ cp node_modules/redux/dist/redux.min.js lib
 #+BEGIN_SRC sh :exports both
 npm install redux-saga
 cp node_modules/redux-saga/dist/redux-saga.umd.min.js lib
+#+END_SRC
+
+** react-redux
+
+#+BEGIN_SRC sh :exports both
+npm install reactx-redux
+cp node_modules/redux-redux/dist/react-redux.min.js lib
 #+END_SRC
