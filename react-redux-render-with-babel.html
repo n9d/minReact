@@ -13,7 +13,7 @@
   <div id="root" /> <!-- ここにReactをrender -->
 
   <script type="text/babel">
-  //<script type="text/javascript"> // 最小構成 Redux
+    // 最小構成 Redux
     function counter(state = 0, action) {
       switch (action.type) {
         case 'INC':
@@ -28,57 +28,69 @@
     const allReducer = Redux.combineReducers({ counter: counter });
     let store = Redux.createStore(allReducer)
 
-    store.subscribe(() => console.log(store.getState())) // storeが変わったときにconsoleに出力
+    const putStore = ()=> console.log({STORE:"store's value",...store.getState()})
+    store.subscribe(putStore) // storeが変わったときにconsoleに出力
+    // Redux ここまで
 
+    putStore()
     const dispachTest = () =>{ // storeを簡単に変えるためのテスト
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'DEC' })
     }
-  //script>
-  //script type="text/babel">
-    // コンポーネントがレンダリングされるときにconsoleに出力
-    class RC extends React.Component {
+
+
+    class RC extends React.Component { // コンポーネントがレンダリングされるときにconsoleに出力
       constructor(props){super(props);}
-      componentDidMount(){console.log(`React.Componet ${this.constructor.name} Mount`);}
-      componentDidUpdate(){console.log(`React.Componet ${this.constructor.name} Update`);}
-      componentWillUnmount(){console.log(`React.Componet ${this.constructor.name} Unmunt`);}
+      componentDidMount(){console.log(`■ React.Componet ${this.constructor.name} Mount ■`);}
+      componentDidUpdate(){console.log(`■ React.Componet ${this.constructor.name} Update ■`);}
+      componentWillUnmount(){console.log(`■ React.Componet ${this.constructor.name} Unmunt ■`);}
     }
 
-    class PC extends React.PureComponent {
+    class PC extends React.PureComponent { // コンポーネントがレンダリングされるときにconsoleに出力
       constructor(props){super(props);}
-      componentDidMount(){console.log(`PureReact.Componet ${this.constructor.name} Mount`);}
-      componentDidUpdate(){console.log(`PureReact.Componet ${this.constructor.name} Update`);}
-      componentWillUnmount(){console.log(`PureReact.Componet ${this.constructor.name} Unmunt`);}
+      componentDidMount(){console.log(`● PureReact.Componet ${this.constructor.name} Mount ●`);}
+      componentDidUpdate(){console.log(`● PureReact.Componet ${this.constructor.name} Update ●`);}
+      componentWillUnmount(){console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`);}
     }
 
+    // React ここから
     class Tag1 extends RC {
       constructor(props){super(props);}
       render(){return(<div><h1>Tag1</h1><Tag2 /></div>)}
     }
     class Tag2 extends RC {
       constructor(props){super(props);}
-      render(){return(<div><h2>Tag2</h2><Tag3d a="1" /></div>)}
+      render(){return(<div><h2>Tag2</h2><Tag3 a="1" /></div>)}
     }
-    class Tag3 extends RC {
+    class Tag3Base extends RC {
       constructor(props){super(props);}
       render(){
         return(
           <div>
             <h3>Tag3</h3>
             a={this.props.a},
-            c={this.props.c}
-            {console.log(this.props)}
+            store.counter={this.props.c}
+            <br />
+            <button onClick={()=>this.props.dispatch({type:'DEC'})}>-1</button>
+            <button onClick={()=>this.props.dispatch({type:'INC'})}>+1</button>
+            <Tag4 />
           </div>
         )
       }
     }
-    const Tag3d=(ReactRedux.connect(s=>{return {c:s.counter}}))(Tag3)
+    class Tag4 extends PC {
+      constructor(props){super(props);}
+      render(){return(<div><h4>Tag4</h4></div>)}
+    }
+    // ReactRedux.connectは React.Componentをラップしたコンポーネントを返す（ここでstate変化時にrenderしている模様）
+    const Tag3=(ReactRedux.connect(s=>{return {c:s.counter}}))(Tag3Base)
 
     const Provider=ReactRedux.Provider;
     const rootElement = document.getElementById("root");
 
     ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>,rootElement)
+    // React ここまで
   </script>
 </body>
 </html>
