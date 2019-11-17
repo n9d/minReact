@@ -94,8 +94,8 @@
         super(props);
         this.state = { c: 10 };
       }
-      inc() { this.setState({ c: this.state.c + 1 }) }
-      dec() { this.setState({ c: this.state.c - 1 }) }
+      inc = () => { this.setState({ c: this.state.c + 1 }) }
+      dec = () => { this.setState({ c: this.state.c - 1 }) }
       render() {
         return (
           <div>
