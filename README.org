@@ -130,9 +130,8 @@
 - Reduxは Model を担当し、Action以外の変更を受け付けない。(つまりActionとはControllerからボタン以外を外した状態)
 - Sagaは疑似マルチスレッドにより全ての非同期処理を担当する。Storeに対するアクターモデルであるとも言える
 
-#+CAPTION: 動作イメージ
-#+NAME: fig:label
-file:img/React-Redux-Saga.png
+
+[[file:img/React-Redux-Saga.png][動作イメージ]]
 
 * index.html 作成スクリプト
 
