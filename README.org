@@ -10,11 +10,11 @@
 
 ** local
 
-- git clone した後 何らかの形でローカルHTTPサーバを立ち上げる
-	- `brew install  http-server` でインストールした http-serverを実行するか
-	- `npm install -g httpserver` でインストールした httpserverを実行するか
-	- `python -m http.server 3000` で実行
-	- npx serve で良さそうな気もする
+- git clone した後、当該フォルダで何らかの形でローカルHTTPサーバを立ち上げる
+	- =brew install  http-server= でインストールした http-serverを実行するか
+	- =npm install -g httpserver= でインストールした httpserverを実行するか
+	- =python -m http.server 3000= で実行
+	- =npx serve= で良さそうな気もする(jsやってるんだからコレだろうな)
 
 * babel
 
@@ -79,6 +79,34 @@
 - ReactRedux.connectの機能によりマッピングされた値はコンポーネントが本来保持する同名のpropsを上書きする
 - このことはそのコンポーネントが単独で動作することを確認した後、reduxへ組み込むことができることを意味し、コンポーネントのモジュール性を向上させる
 - Tag3Aloneがきちんと動かないのでまだ途中
+
+
+* index.html 作成スクリプト
+
+#+BEGIN_SRC sh :exports both
+cat << HEAD > index.html
+<html>
+  <head>
+    <title>最小構成でReactJS</title>
+  </head>
+  <body>
+    <p> 詳細は<a href="https://github.com/n9d/minReact">minReact</a>を参照のこと </p>
+    <p />
+HEAD
+
+for file in *.html; do
+  title=`cat $file | ruby -e 'print STDIN.read.match(/<title>([^<]*)<\/title>/m)[1]'`
+  echo "    <p> <a href='${file}'>${title}</a> ${file} </p>" >> index.html
+done
+
+cat << TAIL >> index.html
+  </body>
+</html>
+TAIL
+
+#+END_SRC
+
+#+RESULTS:
 
 
 * ライブラリ抽出
