@@ -43,73 +43,72 @@
       store.dispatch({ type: 'DEC' })
     }
 
-    class RC extends React.Component { // コンポーネントがレンダリングされるときにconsoleに出力
-      constructor(props) { super(props); }
-      componentDidMount() { console.log(`■ React.Componet ${this.constructor.name} Mount ■`); }
-      componentDidUpdate() { console.log(`■ React.Componet ${this.constructor.name} Update ■`); }
-      componentWillUnmount() { console.log(`■ React.Componet ${this.constructor.name} Unmunt ■`); }
+    const useLogger = (component) => {
+      React.useEffect(() => {
+        console.log(`■ React.FC ${component.name} call effect ■`);
+        return () => { console.log(`■ React.FC ${component.name} call clare effect ■`); }
+      })
     }
 
-    class PC extends React.PureComponent { // コンポーネントがレンダリングされるときにconsoleに出力
-      constructor(props) { super(props); }
-      componentDidMount() { console.log(`● PureReact.Componet ${this.constructor.name} Mount ●`); }
-      componentDidUpdate() { console.log(`● PureReact.Componet ${this.constructor.name} Update ●`); }
-      componentWillUnmount() { console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`); }
+    const LoggerWrapper = (WrappedComponent) => (props) => {
+      useLogger(WrappedComponent)
+      return <WrappedComponent {...props} />
+    }
+
+    const AsPureComponent = (WrappedComponent, deps) => (props) => {
+      return React.useMemo(() => {
+        console.group("useMemo");
+        console.dir(WrappedComponent);
+        console.log(`▲ useMemo ${WrappedComponent.name} update ▲`);
+        console.groupEnd();
+        return <WrappedComponent {...props} />
+      }, deps);
     }
 
     // React ここから
-    class Tag1 extends RC {
-      constructor(props) { super(props); }
-      render() { return (<div><h1>Tag1</h1><Tag2 /></div>) }
+    const Tag1 = () => {
+      return (<div><h1>Tag1</h1><Tag2WithLogger /></div>)
     }
-    class Tag2 extends RC {
-      constructor(props) { super(props); }
-      render() {
-        return (
-          <div>
-            <h2>Tag2</h2>
-            <Tag3Alone />
-            <Tag3Redux />
-          </div>
-        )
-      }
+    const Tag1WithLogger = LoggerWrapper(Tag1);
+    const Tag2 = () => {
+      return (
+        <div>
+          <h2>Tag2</h2>
+          <Tag3Alone />
+          <Tag3Redux />
+        </div>
+      )
     }
-    class Tag3Base extends RC {
-      constructor(props) { super(props) }
-      render() {
-        return (
-          <div>
-            <h3>Tag3</h3>
-            {console.log(this.props)}
-            {"c=" + this.props.c}
-            <br />
-            <button onClick={() => this.props.dec()}>-1</button>
-            <button onClick={() => this.props.inc()}>+1</button>
-            <Tag4 />
-          </div>
-        )
-      }
+    const Tag2WithLogger = LoggerWrapper(Tag2);
+    const Tag3Base = (props) => {
+      return (
+        <div>
+          <h3>Tag3</h3>
+          {console.log(props)}
+          {"c=" + props.c}
+          <br />
+          <button onClick={() => props.dec()}>-1</button>
+          <button onClick={() => props.inc()}>+1</button>
+          <Tag4WithMemoLogger />
+        </div>
+      )
     }
-    class Tag3Alone extends RC {
-      constructor(props) {
-        super(props);
-        this.state = { c: 10 };
-      }
-      inc = () => { this.setState(prev => { return { c: prev.c + 1 } }) }
-      dec = () => { this.setState(prev => { return { c: prev.c - 1 } }) }
-      render() {
-        return (
-          <div>
-            <h3>Tag3Test</h3>
-            <Tag3Base c={this.state.c} inc={this.inc} dec={this.dec} />
-          </div>
-        )
-      }
+
+    const Tag3Alone = (props) => {
+      const [count, setCount] = React.useState(10);
+      const inc = () => { setCount(count + 1) }
+      const dec = () => { setCount(count - 1) }
+      const Tag3WithLogger = LoggerWrapper(Tag3Base);
+      return (
+        <div>
+          <h3>Tag3Test</h3>
+          <Tag3WithLogger c={count} inc={inc} dec={dec} />
+        </div>
+      )
     }
-    class Tag4 extends PC {
-      constructor(props) { super(props); }
-      render() { return (<div><h4>Tag4</h4></div>) }
-    }
+    const Tag4 = () => { return (<div><h4>Tag4</h4></div>) }
+    const Tag4WithLogger = LoggerWrapper(Tag4);
+    const Tag4WithMemoLogger = AsPureComponent(Tag4WithLogger, []);
     // ReactRedux.connectは React.Componentをラップしたコンポーネントを返す（ここでstate変化時にrenderしている模様）
     const Tag3Redux = (ReactRedux.connect(
       store => { return { c: store.counter } }, // store->propsへの写像 props.c はオーバライドされる
@@ -124,7 +123,7 @@
     const Provider = ReactRedux.Provider;
     const rootElement = document.getElementById("root");
 
-    ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>, rootElement)
+    ReactDOM.render(<Provider store={store}> <Tag1WithLogger /></Provider>, rootElement)
     // React ここまで
   </script>
 </body>
