@@ -78,7 +78,8 @@
 
 - ReactRedux.connectの機能によりマッピングされた値はコンポーネントが本来保持する同名のpropsを上書きする
 - このことはそのコンポーネントが単独で動作することを確認した後、reduxへ組み込むことができることを意味し、コンポーネントのモジュール性を向上させる
-- Tag3Aloneがきちんと動かないのでまだ途中
+- Tag3AloneはTag3Baseのテストとして機能する
+- 一般的なビルドツリーでは =exports default ReactRedux.connect(....)(Tag3Base)= とやり、 Tag3Base自身を隠蔽してしまうのでここは考察しなければならい
 
 
 * index.html 作成スクリプト
