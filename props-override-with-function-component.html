@@ -46,8 +46,8 @@
     // 意味はないがサンプルとしてカスタムフック化しておく
     const useLogger = (component) => {
       React.useEffect(() => {
-        console.log(`■ React.FC ${component.name} call effect ■`);
-        return () => { console.log(`■ React.FC ${component.name} call clare effect ■`); }
+        console.log(`■ React.FC ${getDisplayName(component)} call effect ■`);
+        return () => { console.log(`■ React.FC ${getDisplayName(component)} call clare effect ■`); }
       })
     }
 
@@ -58,7 +58,7 @@
         useLogger(WrappedComponent)
         return <WrappedComponent {...props} />
       }
-      ret.displayName = getDisplayName(WrappedComponent);
+      ret.displayName = `LoggerWrapper(${getDisplayName(WrappedComponent)})`;
       return ret;
     }
 
@@ -74,7 +74,7 @@
           return ret;
         }, []));
       }
-      ret.displayName = getDisplayName(WrappedComponent);
+      ret.displayName = `AsPureComponent(${getDisplayName(WrappedComponent)})`;
       return ret;
     }
 
