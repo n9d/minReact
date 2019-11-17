@@ -56,10 +56,34 @@
 
 - コンソールで開いた後リロードして確認すると、storeの変遷が見れる
 - コンソールで =ReduxSaga= を評価すると redux-sagaが持っているメソッド一覧が確認できる
+- Redux-Sagaでは、StoreにActionを適用した後、Storeの変更を感知するためにActionを契機としていることに注意すること
+- つまり人間（ユーザ）側では、ボタンに該当するコンポーネントによってStoreの変更を感知するが、Saga側ではコピーされたアクションがコレに当たる
+- したがって、「StoreはどのようなActionでも遷移する」（変化しない場合も恒等で遷移する）ことに注意
+- reducerの =switch= における =default= 部分がコレに当たる
 
 - runSaga :: これぐらいしか使わない
 - default :: nodeで使うときには createSagaMiddleware となる
 - effects :: put,call,take等の関数が入っている
+
+- generatorで記述することで、疑似マルチスレッドとし、各スレッド(saga)を逐次処理で記述することができる
+- 様々なsagaのeffectを利用し store及び外界と通信を行う
+	- fork :: un*x のfork同様、プロセスを分岐させる
+	- take :: storeの観察契機として storeの次に渡された特定Actionをwatchする
+	- select :: storeを取得する。本来的にはselectの結果でsagaは動くべきだがコストが高いのでtakeがあるものと推測
+	- call :: promiseを実行し結果をpromiseから剥いてくれる(nonBlockingに書くのに必須)
+	- put :: storeにActionを投げて次の状態遷移を行わせる（put以外に内部システムとの通信手段を持たないようにすること）
+	- cancel :: process kill に該当
+
+- とはいえ、 =fork= + =while (true){ take ...;...}= 用にいくつか用意されている
+	- takeEvery :: 並列で処理を分岐(fork)した後、同名のイベントを待ち続ける(take)
+	- takeLatest :: 並列で処理を分岐(fork)した後、前回の処理を中断(cancel)し、同名のイベントを待ち続ける(take)
+	- =takeLatest(["AA","BB"],mySaga)= だと ="AA"= 処理中に ="BB"= が来たときに ="AA"= を中断する
+	- なので、先勝ちのtakeも書くことができる（ロックを考える必要があり、デフォルトはなさそう？）
+	- rootSagaの記述方法によって起動される順序、個数、回数が異なることに注意
+
+** Sagaでhttpアクセス
+
+- 予定
 
 * React-Redux
 ** 最小構成
@@ -84,11 +108,29 @@
 - 一般的なビルドツリーでは =exports default ReactRedux.connect(....)(Tag3Base)= とやり、 Tag3Base自身を隠蔽してしまうのでここは考察しなければならい
 - Tag3Base コンポーネントは Formの元となるコンポーネントといえ、今後の基本記述スタイルになると考えられる。
 
+** propsオーバーライド（関数コンポーネント版）
+
+[[file:props-override-with-function-component.html][props-override-with-function-component]]
+
 ** 複数ドメインのstore
 
 [[file:dual-domain-store.html][dual-domain-store]]
 
 - 複数ドメインのstoreを領域を区切ってそれぞれコンポーネントにマッピングしても関係のある範囲でしか再描画しない。(react面目躍如)
+
+* React/Redux/Saga
+** なんかつくる
+
+- 何作ろうか・・・
+
+* まとめ
+
+- React/Reduc/SagaはMVCである
+- Reactは View を担当し、Controllerとしては ReduxのActionを発行するのみ
+- Reduxは Model を担当し、Action以外の変更を受け付けない。(つまりActionとはControllerからボタン以外を外した状態)
+- Sagaは疑似マルチスレッドにより全ての非同期処理を担当する。Storeに対するアクターモデルであるとも言える
+
+[[file:img/React-Redux-Saga.png][動作イメージ]]
 
 * index.html 作成スクリプト
 
