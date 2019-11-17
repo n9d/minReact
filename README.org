@@ -81,6 +81,11 @@
 - Tag3AloneはTag3Baseのテストとして機能する
 - 一般的なビルドツリーでは =exports default ReactRedux.connect(....)(Tag3Base)= とやり、 Tag3Base自身を隠蔽してしまうのでここは考察しなければならい
 
+** 複数ドメインのstore
+
+[[file:dual-domain-store.html][dual-domain-store]]
+
+- 複数ドメインのstoreを領域を区切ってそれぞれコンポーネントにマッピングしても関係のある範囲でしか再描画しない。(react面目躍如)
 
 * index.html 作成スクリプト
 
