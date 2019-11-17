@@ -51,9 +51,6 @@
       })
     }
 
-    // HOCするとコンポーネント名を失うので、維持するための関数
-    const getDisplayName = (component) => component.displayName || component.name;
-
     // useLoggerでラップするHOC
     const LoggerWrapper = (WrappedComponent) => {
       // 返す関数にdisplayNameを設定して名前を維持する
@@ -80,6 +77,9 @@
       ret.displayName = getDisplayName(WrappedComponent);
       return ret;
     }
+
+    // HOCするとコンポーネント名を失うので、維持するための関数
+    const getDisplayName = (component) => component.displayName || component.name;
 
     // React ここから
     const Tag1 = () => {
