@@ -43,6 +43,7 @@
       store.dispatch({ type: 'DEC' })
     }
 
+    // 意味はないがサンプルとしてカスタムフック化しておく
     const useLogger = (component) => {
       React.useEffect(() => {
         console.log(`■ React.FC ${component.name} call effect ■`);
@@ -50,19 +51,34 @@
       })
     }
 
-    const LoggerWrapper = (WrappedComponent) => (props) => {
-      useLogger(WrappedComponent)
-      return <WrappedComponent {...props} />
+    // HOCするとコンポーネント名を失うので、維持するための関数
+    const getDisplayName = (component) => component.displayName || component.name;
+
+    // useLoggerでラップするHOC
+    const LoggerWrapper = (WrappedComponent) => {
+      // 返す関数にdisplayNameを設定して名前を維持する
+      const ret = (props) => {
+        useLogger(WrappedComponent)
+        return <WrappedComponent {...props} />
+      }
+      ret.displayName = getDisplayName(WrappedComponent);
+      return ret;
     }
 
-    const AsPureComponent = (WrappedComponent, deps) => (props) => {
-      return React.useMemo(() => {
-        console.group("useMemo");
-        console.dir(WrappedComponent);
-        console.log(`▲ useMemo ${WrappedComponent.name} update ▲`);
-        console.groupEnd();
-        return <WrappedComponent {...props} />
-      }, deps);
+    // PureComponent化するHOC
+    const AsPureComponent = (WrappedComponent) => {
+      // 返す関数にdisplayNameを設定して名前を維持する
+      const ret = (props) => {
+        return React.useMemo(() => {
+          console.log(`▲ ${getDisplayName(WrappedComponent)}'s Memo Update ▲`);
+          return <WrappedComponent {...props} />
+        }, Object.keys(props).reduce((ret, key) => {
+          ret[key] = props[key];
+          return ret;
+        }, []));
+      }
+      ret.displayName = getDisplayName(WrappedComponent);
+      return ret;
     }
 
     // React ここから
