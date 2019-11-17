@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>props override with function component</title>
+  <script src="lib/react.development.js"></script>
+  <script src="lib/react-dom.development.js"></script>
+  <script src="lib/react-redux.js"></script>
+  <script src="lib/redux.js"></script>
+  <script src="lib/babel.js"></script>
+</head>
+
+<body>
+  コンソールを開いて確認すること
+  <p> <a href='./'>戻る</a> </p>
+  <div id="root" /> <!-- ここにReactをrender -->
+
+  <script type="text/babel">
+    // 最小構成 Redux
+    function counter(state = 0, action) {
+      switch (action.type) {
+        case 'INC':
+          return state + 1
+        case 'DEC':
+          return state - 1
+        default:
+          return state
+      }
+    }
+
+    const allReducer = Redux.combineReducers({ counter: counter });
+    let store = Redux.createStore(allReducer)
+
+    const putStore = () => console.log({ STORE: "store's value", ...store.getState() })
+    store.subscribe(putStore) // storeが変わったときにconsoleに出力
+    // Redux ここまで
+
+    putStore() // 初期storeをconsoleに出力
+    const dispachTest = () => { // storeを簡単に変えるためのテスト
+      store.dispatch({ type: 'INC' })
+      store.dispatch({ type: 'INC' })
+      store.dispatch({ type: 'DEC' })
+    }
+
+    // 意味はないがサンプルとしてカスタムフック化しておく
+    const useLogger = (component) => {
+      React.useEffect(() => {
+        console.log(`■ React.FC ${getDisplayName(component)} call effect ■`);
+        return () => { console.log(`■ React.FC ${getDisplayName(component)} call clare effect ■`); }
+      })
+    }
+
+    // useLoggerでラップするHOC
+    const LoggerWrapper = (WrappedComponent) => {
+      // 返す関数にdisplayNameを設定して名前を維持する
+      const ret = (props) => {
+        useLogger(WrappedComponent)
+        return <WrappedComponent {...props} />
+      }
+      ret.displayName = `LoggerWrapper(${getDisplayName(WrappedComponent)})`;
+      return ret;
+    }
+
+    // PureComponent化するHOC
+    const AsPureComponent = (WrappedComponent) => {
+      // 返す関数にdisplayNameを設定して名前を維持する
+      const ret = (props) => {
+        return React.useMemo(() => {
+          console.log(`▲ ${getDisplayName(WrappedComponent)}'s Memo Update ▲`);
+          return <WrappedComponent {...props} />
+        }, Object.keys(props).reduce((ret, key) => {
+          ret[key] = props[key];
+          return ret;
+        }, []));
+      }
+      ret.displayName = `AsPureComponent(${getDisplayName(WrappedComponent)})`;
+      return ret;
+    }
+
+    // HOCするとコンポーネント名を失うので、維持するための関数
+    const getDisplayName = (component) => component.displayName || component.name;
+
+    // React ここから
+    const Tag1 = () => {
+      return (<div><h1>Tag1</h1><Tag2WithLogger /></div>)
+    }
+    const Tag1WithLogger = LoggerWrapper(Tag1);
+    const Tag2 = () => {
+      return (
+        <div>
+          <h2>Tag2</h2>
+          <Tag3Alone />
+          <Tag3Redux />
+        </div>
+      )
+    }
+    const Tag2WithLogger = LoggerWrapper(Tag2);
+    const Tag3Base = (props) => {
+      return (
+        <div>
+          <h3>Tag3</h3>
+          {console.log(props)}
+          {"c=" + props.c}
+          <br />
+          <button onClick={() => props.dec()}>-1</button>
+          <button onClick={() => props.inc()}>+1</button>
+          <Tag4WithMemoLogger />
+        </div>
+      )
+    }
+
+    const Tag3Alone = (props) => {
+      const [count, setCount] = React.useState(10);
+      const inc = () => { setCount(count + 1) }
+      const dec = () => { setCount(count - 1) }
+      const Tag3WithLogger = LoggerWrapper(Tag3Base);
+      return (
+        <div>
+          <h3>Tag3Test</h3>
+          <Tag3WithLogger c={count} inc={inc} dec={dec} />
+        </div>
+      )
+    }
+    const Tag4 = () => { return (<div><h4>Tag4</h4></div>) }
+    const Tag4WithLogger = LoggerWrapper(Tag4);
+    const Tag4WithMemoLogger = AsPureComponent(Tag4WithLogger, []);
+    // ReactRedux.connectは React.Componentをラップしたコンポーネントを返す（ここでstate変化時にrenderしている模様）
+    const Tag3Redux = (ReactRedux.connect(
+      store => { return { c: store.counter } }, // store->propsへの写像 props.c はオーバライドされる
+      dispatch => {
+        return { // dispath -> propsへの写像
+          inc: () => dispatch({ type: 'INC' }),
+          dec: () => dispatch({ type: 'DEC' })
+        }
+      }
+    ))(Tag3Base)
+
+    const Provider = ReactRedux.Provider;
+    const rootElement = document.getElementById("root");
+
+    ReactDOM.render(<Provider store={store}> <Tag1WithLogger /></Provider>, rootElement)
+    // React ここまで
+  </script>
+</body>
+
+</html>
