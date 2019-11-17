@@ -127,7 +127,7 @@
 
 - React/Reduc/SagaはMVCである
 - Reactは View を担当し、Controllerとしては ReduxのActionを発行するのみ
-- Reduxは Model を担当し、Action以外の変更を受け付けない。(つまりActionとはControllerからボタン以外を外した状態)
+- Reduxは Model を担当し、Action以外の変更を受け付けない。
 - Sagaは疑似マルチスレッドにより全ての非同期処理を担当する。Storeに対するアクターモデルであるとも言える
 
 
