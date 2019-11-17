@@ -95,8 +95,10 @@ cat << HEAD > index.html
 HEAD
 
 for file in *.html; do
-  title=`cat $file | ruby -e 'print STDIN.read.match(/<title>([^<]*)<\/title>/m)[1]'`
-  echo "    <p> <a href='${file}'>${title}</a> ${file} </p>" >> index.html
+  if [ $file != index.html ]; then
+    title=`cat $file | ruby -e 'print STDIN.read.match(/<title>([^<]*)<\/title>/m)[1]'`
+    echo "    <p> <a href='${file}'>${title}</a> ${file} </p>" >> index.html
+  fi
 done
 
 cat << TAIL >> index.html
