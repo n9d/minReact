@@ -77,7 +77,7 @@
 - とはいえ、 =fork= + =while (true){ take ...;...}= 用にいくつか用意されている
 	- takeEvery :: 並列で処理を分岐(fork)した後、同名のイベントを待ち続ける(take)
 	- takeLatest :: 並列で処理を分岐(fork)した後、前回の処理を中断(cancel)し、同名のイベントを待ち続ける(take)
-	- =takeLatest(["AA","BB"],mySaga)= だと ="AA"= 処理中に ="BB"= が来たときに ="AA"= を中断する
+	- =takeLatest(["AA","BB"],mySaga)= だと "AA" 処理中に "BB" が来たときに "AA" を中断する
 	- なので、先勝ちのtakeも書くことができる（ロックを考える必要があり、デフォルトはなさそう？）
 	- rootSagaの記述方法によって起動される順序、個数、回数が異なることに注意
 
