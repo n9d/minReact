@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>FunctionComponent(React)</title>
   <link rel="stylesheet" type="text/css" href="lib/semantic.min.css">
 </head>
+
 <body>
   <div id="app"></div>
   <div onclick="console.log('parent')">
@@ -18,8 +20,8 @@
   <script src="lib/react-dom.development.js"></script>
   <script src="lib/semantic-ui-react.min.js"></script>
   <script type="text/babel">
-    const Button=semanticUIReact.Button
-    const Tag1=({a,b})=>(
+    const Button = semanticUIReact.Button
+    const Tag1 = ({ a, b }) => (
       <div>
         <h1>test</h1>
         <p>{a}</p>
@@ -28,20 +30,21 @@
       </div>
     );
 
-    const Tag2=()=>(
+    const Tag2 = () => (
       <div></div>
     );
 
-    const MyButton=()=>(
+    const MyButton = () => (
       <div>GET</div>
     );
 
-    const p = {a:"helloworld"};
+    const p = { a: "helloworld" };
 
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p}/>,document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
+    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
 
   </script>
 </body>
+
 </html>

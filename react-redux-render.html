@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>React/Redux(babelなし)</title>
 </head>
+
 <body>
   <div id="root" />
 
@@ -35,7 +37,7 @@
 
     store.subscribe(() => console.log(store.getState()))
 
-    const dispachTest = () =>{
+    const dispachTest = () => {
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'DEC' })
@@ -45,26 +47,26 @@
   <script type="text/babel">
     // コンポーネントがレンダリングされるときの仕掛け
     class RC extends React.Component {
-      constructor(props){super(props);}
-      componentDidMount(){console.log(`React.Componet ${this.constructor.name} Mount`);}
-      componentDidUpdate(){console.log(`React.Componet ${this.constructor.name} Update`);}
-      componentWillUnmount(){console.log(`React.Componet ${this.constructor.name} Unmunt`);}
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`React.Componet ${this.constructor.name} Mount`); }
+      componentDidUpdate() { console.log(`React.Componet ${this.constructor.name} Update`); }
+      componentWillUnmount() { console.log(`React.Componet ${this.constructor.name} Unmunt`); }
     }
 
     class PC extends React.PureComponent {
-      constructor(props){super(props);}
-      componentDidMount(){console.log(`PureReact.Componet ${this.constructor.name} Mount`);}
-      componentDidUpdate(){console.log(`PureReact.Componet ${this.constructor.name} Update`);}
-      componentWillUnmount(){console.log(`PureReact.Componet ${this.constructor.name} Unmunt`);}
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`PureReact.Componet ${this.constructor.name} Mount`); }
+      componentDidUpdate() { console.log(`PureReact.Componet ${this.constructor.name} Update`); }
+      componentWillUnmount() { console.log(`PureReact.Componet ${this.constructor.name} Unmunt`); }
     }
   </script>
 
   <script type="text/javascript">
-    class Tag1_1 extends RC{
-      constructor(props){
+    class Tag1_1 extends RC {
+      constructor(props) {
         super(props);
       }
-      render(){
+      render() {
         return React.createElement('div', null, `aaa ${this.props.a} bbb`);
       }
     }
@@ -72,9 +74,9 @@
 
   <script type="text/babel">
     class Tag1 extends RC {
-      constructor(props){super(props);}
-      render(){
-        return(
+      constructor(props) { super(props); }
+      render() {
+        return (
           <div>
             <h1>Tag1</h1>
           </div>
@@ -85,11 +87,12 @@
 
   <!-- ここだけちょっとbabel -->
   <script type="text/babel">
-    const Provider=ReactRedux.Provider;
-    const p = {a:"helloworld"};
+    const Provider = ReactRedux.Provider;
+    const p = { a: "helloworld" };
     const rootElement = document.getElementById("root");
 
-    ReactDOM.render(<Provider store={store}> <Tag1 {...p} /></Provider>,rootElement)
+    ReactDOM.render(<Provider store={store}> <Tag1 {...p} /></Provider>, rootElement)
   </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>props override(失敗版)</title>
@@ -9,6 +10,7 @@
   <script src="lib/redux.js"></script>
   <script src="lib/babel.js"></script>
 </head>
+
 <body>
   コンソールを開いて確認すること
   <div id="root" /> <!-- ここにReactをrender -->
@@ -29,92 +31,97 @@
     const allReducer = Redux.combineReducers({ counter: counter });
     let store = Redux.createStore(allReducer)
 
-    const putStore = ()=> console.log({STORE:"store's value",...store.getState()})
+    const putStore = () => console.log({ STORE: "store's value", ...store.getState() })
     store.subscribe(putStore) // storeが変わったときにconsoleに出力
     // Redux ここまで
 
     putStore() // 初期storeをconsoleに出力
-    const dispachTest = () =>{ // storeを簡単に変えるためのテスト
+    const dispachTest = () => { // storeを簡単に変えるためのテスト
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'INC' })
       store.dispatch({ type: 'DEC' })
     }
 
     class RC extends React.Component { // コンポーネントがレンダリングされるときにconsoleに出力
-      constructor(props){super(props);}
-      componentDidMount(){console.log(`■ React.Componet ${this.constructor.name} Mount ■`);}
-      componentDidUpdate(){console.log(`■ React.Componet ${this.constructor.name} Update ■`);}
-      componentWillUnmount(){console.log(`■ React.Componet ${this.constructor.name} Unmunt ■`);}
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`■ React.Componet ${this.constructor.name} Mount ■`); }
+      componentDidUpdate() { console.log(`■ React.Componet ${this.constructor.name} Update ■`); }
+      componentWillUnmount() { console.log(`■ React.Componet ${this.constructor.name} Unmunt ■`); }
     }
 
     class PC extends React.PureComponent { // コンポーネントがレンダリングされるときにconsoleに出力
-      constructor(props){super(props);}
-      componentDidMount(){console.log(`● PureReact.Componet ${this.constructor.name} Mount ●`);}
-      componentDidUpdate(){console.log(`● PureReact.Componet ${this.constructor.name} Update ●`);}
-      componentWillUnmount(){console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`);}
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`● PureReact.Componet ${this.constructor.name} Mount ●`); }
+      componentDidUpdate() { console.log(`● PureReact.Componet ${this.constructor.name} Update ●`); }
+      componentWillUnmount() { console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`); }
     }
 
     // React ここから
     class Tag1 extends RC {
-      constructor(props){super(props);}
-      render(){return(<div><h1>Tag1</h1><Tag2 /></div>)}
+      constructor(props) { super(props); }
+      render() { return (<div><h1>Tag1</h1><Tag2 /></div>) }
     }
     class Tag2 extends RC {
-      constructor(props){super(props);}
-      render(){return(
-        <div>
-          <h2>Tag2</h2>
-          <Tag3Base />
-          <Tag3 />
-        </div>
-      )}
+      constructor(props) { super(props); }
+      render() {
+        return (
+          <div>
+            <h2>Tag2</h2>
+            <Tag3Base />
+            <Tag3 />
+          </div>
+        )
+      }
     }
     class Tag3Base extends RC {
-      constructor(props){
+      constructor(props) {
         super(props);
-        this.state={c:10};
+        this.state = { c: 10 };
       }
-      inc(){
-        this.props.inc ? this.props.inc() : this.setState({c:this.state.c+1})
+      inc() {
+        this.props.inc ? this.props.inc() : this.setState({ c: this.state.c + 1 })
       }
-      dec(){
-        this.props.dec ? this.props.dec() : this.setState({c:this.state.c-1})
+      dec() {
+        this.props.dec ? this.props.dec() : this.setState({ c: this.state.c - 1 })
       }
-      getC(){
+      getC() {
         return (this.props.c ? this.props.c : this.state.c)
       }
-      render(){
-        return(
+      render() {
+        return (
           <div>
             <h3>Tag3</h3>
             {console.log(this.props)}
             c={this.getC()}
             <br />
-            <button onClick={()=>this.dec()}>-1</button>
-            <button onClick={()=>this.inc()}>+1</button>
+            <button onClick={() => this.dec()}>-1</button>
+            <button onClick={() => this.inc()}>+1</button>
             <Tag4 />
           </div>
         )
       }
     }
     class Tag4 extends PC {
-      constructor(props){super(props);}
-      render(){return(<div><h4>Tag4</h4></div>)}
+      constructor(props) { super(props); }
+      render() { return (<div><h4>Tag4</h4></div>) }
     }
     // ReactRedux.connectは React.Componentをラップしたコンポーネントを返す（ここでstate変化時にrenderしている模様）
-    const Tag3=(ReactRedux.connect(
-          store=>{return {c:store.counter}}, // store->propsへの写像 props.c はオーバライドされる
-          dispatch=>{return { // dispath -> propsへの写像
-            inc: ()=> dispatch({type:'INC'}),
-            dec: ()=> dispatch({type:'DEC'})
-          }}
+    const Tag3 = (ReactRedux.connect(
+      store => { return { c: store.counter } }, // store->propsへの写像 props.c はオーバライドされる
+      dispatch => {
+        return { // dispath -> propsへの写像
+          inc: () => dispatch({ type: 'INC' }),
+          dec: () => dispatch({ type: 'DEC' })
+        }
+      }
     ))(Tag3Base)
 
-    const Provider=ReactRedux.Provider;
+    const Provider = ReactRedux.Provider;
     const rootElement = document.getElementById("root");
 
-    ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>,rootElement)
+    ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>, rootElement)
     // React ここまで
   </script>
 </body>
+
 </html>

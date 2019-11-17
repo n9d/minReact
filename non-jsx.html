@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>PureComponent(React)</title>
 </head>
+
 <body>
   <div id="app"></div>
 
@@ -12,47 +14,48 @@
   <script type="text/javascript">
 
     class BC extends React.Component {
-      constructor(props){
+      constructor(props) {
         super(props);
       }
-      componentDidMount(){
+      componentDidMount() {
         console.log(`${this.constructor.name} Mount`);
       }
-      componentDidUpdate(){
+      componentDidUpdate() {
         console.log(`${this.constructor.name} Update`);
       }
-      componentWillUnmount(){
+      componentWillUnmount() {
         console.log(`${this.constructor.name} Unmunt`);
       }
     }
 
     class PC extends React.PureComponent {
-      constructor(props){
+      constructor(props) {
         super(props);
       }
-      componentDidMount(){
+      componentDidMount() {
         console.log(`${this.constructor.name} Mount`);
       }
-      componentDidUpdate(){
+      componentDidUpdate() {
         console.log(`${this.constructor.name} Update`);
       }
-      componentWillUnmount(){
+      componentWillUnmount() {
         console.log(`${this.constructor.name} Unmunt`);
       }
     }
 
-    class Tag1 extends BC{
-      constructor(props){
+    class Tag1 extends BC {
+      constructor(props) {
         super(props);
       }
-      render(){
+      render() {
         return React.createElement('div', null, `aaa ${this.props.a} bbb`);
       }
     }
 
-    const p = {a:"helloworld"};
-    ReactDOM.render(React.createElement(Tag1, {...p}, null), document.getElementById("app"));
+    const p = { a: "helloworld" };
+    ReactDOM.render(React.createElement(Tag1, { ...p }, null), document.getElementById("app"));
 
   </script>
 </body>
+
 </html>

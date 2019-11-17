@@ -38,7 +38,7 @@
       }
     }
 
-    const allReducer = Redux.combineReducers({ counter: counter,counter2: counter2 });
+    const allReducer = Redux.combineReducers({ counter: counter, counter2: counter2 });
     let store = Redux.createStore(allReducer)
 
     const putStore = () => console.log({ STORE: "store's value", ...store.getState() })
@@ -150,4 +150,5 @@
     // React ここまで
   </script>
 </body>
+
 </html>

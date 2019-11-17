@@ -3,7 +3,6 @@
 - 最小の構成で react(redux/saga) を実験する
 
 * 実験環境
-
 ** github-pages
 
 - [[https://n9d.github.io/minReact/][ここ]]で確認できる
@@ -14,9 +13,9 @@
 	- =brew install  http-server= でインストールした http-serverを実行するか
 	- =npm install -g httpserver= でインストールした httpserverを実行するか
 	- =python -m http.server 3000= で実行
-	- =npx serve= で良さそうな気もする(jsやってるんだからコレだろうな)
+	- =npx serve= で良さそうな気もする(jsやってるんだからコレだろうな) -> [[http://localhost:5000/index.html][ここ]]をアクセス
 
-* babel
+* Babel
 
  [[file:babel.html][babelでhelloworld]]
 
@@ -29,13 +28,16 @@
 
 - コンソールで =React= を評価すると reactが持っているメソッド一覧が確認できる (createElementや useState等がある)
 - コンソールで =ReactDOM= を評価すると reactが持っているメソッド一覧が確認できる(renderはここにある)
+- このソースコードをみると JSXとは =React.createElement= に他ならないことがわかる
 
-
-** 仮想DOMを認識しよう
+** 仮想DOMを認識
 
 [[file:purecomponent.html][PureComponent]]
 
 - コンソールで確認すると、レンダリングの回数が理解できる
+- このソースのTag1〜3の継承元をPC(PureComponent),RC(Component)に切り替えることでレンダリングの有無が変わる
+- 例えばTag2のみをPureComponentにした場合 Tag2の再レンダリングがなかったらTag3は書き換えられれないことに注意
+- 故にReactの再レンダリングの最適化は最後にしろということになる。
 
 * Redux
 
@@ -49,7 +51,7 @@
 - applyMiddleware ::  sagaを使うときに使う
 
 * Redux-Saga
-
+** Sagaの最小構成
 [[file:saga.html][Redux-Saga]]
 
 - コンソールで開いた後リロードして確認すると、storeの変遷が見れる
@@ -60,7 +62,6 @@
 - effects :: put,call,take等の関数が入っている
 
 * React-Redux
-
 ** 最小構成
 
 [[file:react-redux-render-with-babel.html][React-Redux]]
@@ -79,7 +80,9 @@
 - ReactRedux.connectの機能によりマッピングされた値はコンポーネントが本来保持する同名のpropsを上書きする
 - このことはそのコンポーネントが単独で動作することを確認した後、reduxへ組み込むことができることを意味し、コンポーネントのモジュール性を向上させる
 - Tag3AloneはTag3Baseのテストとして機能する
+- Tag3Aloneの =inc = () => { this.setState(prev => { return { c: prev.c + 1 } }) }= という記述は超大事、この書き方をすると Tag3Baseは Reduxと容易に切替可能になる。
 - 一般的なビルドツリーでは =exports default ReactRedux.connect(....)(Tag3Base)= とやり、 Tag3Base自身を隠蔽してしまうのでここは考察しなければならい
+- Tag3Base コンポーネントは Formの元となるコンポーネントといえ、今後の基本記述スタイルになると考えられる。
 
 ** 複数ドメインのstore
 
@@ -116,13 +119,74 @@ TAIL
 
 #+RESULTS:
 
+* 開発環境整備
+** Visual Studio Code
+*** 拡張
 
-* ライブラリ抽出
+- 下記を実行
+
+#+BEGIN_SRC sh :exports both
+code --install-extensions aeschli.vscode-css-formatter
+code --install-extensions dbaeumer.vscode-eslint
+code --install-extensions joelday.docthis
+code --install-extensions MS-CEINTL.vscode-language-pack-ja
+code --install-extensions msjsdiag.debugger-for-chrome
+code --install-extensions oderwat.indent-rainbow
+code --install-extensions SimonSiefke.svg-preview
+#code --install-extensions sohamkamani.code-eol
+#+END_SRC
+
+*** Setting.json
+
+#+BEGIN_SRC js :exports both
+    "[typescript]": {
+        "editor.tabSize": 4
+    },
+    "[html]": {
+        "editor.tabSize": 2
+    },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.detectIndentation": false,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "all",
+    "editor.tabSize": 4,
+    "eslint.enable": true,
+    "eslint.validate": [
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+    ],
+    "extensions.ignoreRecommendations": true,
+    "files.exclude": {
+        "**/.git": false,
+        "**/.vscode": false,
+        "**/.svn": false,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true
+    },
+    "git.suggestSmartCommit": false,
+    "javascript.preferences.quoteStyle": "double",
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "typescript.preferences.quoteStyle": "double",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "window.zoomLevel": 0,
+    "workbench.editor.enablePreview": false
+}
+#+END_SRC
+
+** ライブラリ抽出
 
 - umd系の物を持ってくればいい
 - 下記一連の作業で最小の必要なものが =./lib= 以下に置かれる
 - そのへんのCDNに転がっているやつは古いことが多いので・・・
-
 
 #+BEGIN_SRC sh :exports both
 mkdir lib

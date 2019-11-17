@@ -1,0 +1,42 @@
+{
+    "[typescript]": {
+        "editor.tabSize": 4
+    },
+    "[html]": {
+        "editor.tabSize": 2
+    },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.detectIndentation": false,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "all",
+    "editor.tabSize": 4,
+    "eslint.enable": true,
+    "eslint.validate": [
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+    ],
+    "extensions.ignoreRecommendations": true,
+    "files.exclude": {
+        "**/.git": false,
+        "**/.vscode": false,
+        "**/.svn": false,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true
+    },
+    "git.suggestSmartCommit": false,
+    "javascript.preferences.quoteStyle": "double",
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "typescript.preferences.quoteStyle": "double",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "window.zoomLevel": 0,
+    "workbench.editor.enablePreview": false
+}
