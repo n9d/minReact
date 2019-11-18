@@ -23,6 +23,8 @@
     const put = ReduxSaga.effects.put
     const takeEvery = ReduxSaga.effects.takeEvery
     const takeLatest = ReduxSaga.effects.takeLatest
+    const takeLeading = ReduxSaga.effects.takeLeading
+    const throttle = ReduxSaga.effects.throttle
 
     // reducer作成
     function dbReducer(state = {}, action) {
@@ -49,6 +51,7 @@
     function* getURL(action) {
       switch (action.type) {
         case "GET_URL":
+          console.log("saga getURL")
           data = yield call(() => fetch("json/sample.json").then(r => r.status == 200 ? r.json() : r));
           yield put({ type: "PUT_VAL", value: data }); // putはstoreとの唯一の通信手段
           return;
@@ -64,7 +67,8 @@
     // takeEveryは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、同名のイベントを待ち続ける
     // takeLatestは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、前回の処理を中断し、同名のイベントを待ち続ける
     function* rootSaga() {
-      yield takeEvery("GET_URL", getURL); //同名のsagaに渡す際でもこう書くことで別々のスレッドになる
+      yield takeLeading("GET_URL", getURL); //一度受け付けたら、処理中は受け付けない
+      //yield throttle(1000, "GET_URL", getURL); //一度受け付けたら、一秒間遅延させる
       yield takeEvery(["GET_URL"], echoSaga); //何度でもforkできる
     }
 
@@ -84,6 +88,10 @@
     const main = () => {
       store.dispatch({ type: "GET_URL" });
       store.dispatch({ type: "DEL_VAL" });
+      store.dispatch({ type: "GET_URL" }); // 最初のアクションが実行中なのでコレ以降はgetURL sagaは実行されない
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "GET_URL" });
       store.dispatch({ type: "GET_URL" });
     };
     main();
