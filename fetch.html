@@ -3,97 +3,90 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>生コンポーネントでfetch</title>
+  <title>root saga (like un*x init)</title>
 </head>
 
 <body>
   <div id="app"></div>
 
-  <script src="lib/babel.js"></script>
-  <script src="lib/react.development.js"></script>
-  <script src="lib/react-dom.development.js"></script>
-  <script type="text/babel">
+  <p>Check console.</p>
 
-    class BC extends React.Component {
-      constructor(props) {
-        super(props);
-      }
-      componentDidMount() {
-        console.log(`${this.constructor.name} Mount`);
-      }
-      componentDidUpdate() {
-        console.log(`${this.constructor.name} Update`);
-      }
-      componentWillUnmount() {
-        console.log(`${this.constructor.name} Unmunt`);
+  <script src="lib/redux.js"></script>
+  <script src="lib/redux-saga.umd.js"></script>
+
+  <script type="text/javascript">
+    const applyMiddleware = Redux.applyMiddleware
+    const createStore = Redux.createStore
+    const combineReducers = Redux.combineReducers
+    const createSagaMiddleware = ReduxSaga.default  //https://github.com/redux-saga/redux-saga/blob/master/README_ja.md
+    const call = ReduxSaga.effects.call
+    const put = ReduxSaga.effects.put
+    const takeEvery = ReduxSaga.effects.takeEvery
+    const takeLatest = ReduxSaga.effects.takeLatest
+
+    // reducer作成
+    function dbReducer(state = {}, action) {
+      const val = action.value ? action.value : { error: "no_data" };
+      switch (action.type) {
+        case "PUT_VAL":
+          console.log("action PUT_VAL")
+          return { data: val };
+        case "DEL_VAL":
+          console.log(`action DEL_VAL`)
+          return { data: {} };
+        default: //列挙されていないActionはstateをそのまま返すのに注意
+          return state;
       }
     }
 
-    class PC extends React.PureComponent {
-      constructor(props) {
-        super(props);
-      }
-      componentDidMount() {
-        console.log(`${this.constructor.name} Mount`);
-      }
-      componentDidUpdate() {
-        console.log(`${this.constructor.name} Update`);
-      }
-      componentWillUnmount() {
-        console.log(`${this.constructor.name} Unmunt`);
+    // combineReducers
+    const allReducer = combineReducers({
+      db: dbReducer
+    });
+
+    // saga 
+    // rootSagaの記述方法によって起動される順序、個数、回数が異なることに注意
+    function* getURL(action) {
+      switch (action.type) {
+        case "GET_URL":
+          data = yield call(() => fetch("json/sample.json").then(r => r.status == 200 ? r.json() : r));
+          yield put({ type: "PUT_VAL", value: data }); // putはstoreとの唯一の通信手段
+          return;
       }
     }
 
-    class Tag1 extends BC {
-      constructor(props) {
-        super(props);
-      }
-      render() {
-        return (
-          <div>
-            <h1>Tag1</h1>
-            <div>{this.props.a}</div>
-            <Tag2 {...this.props} />
-          </div>
-        );
-      }
+    // saga その２
+    function* echoSaga(action) {
+      console.log({ action: "■ saga fire! ■", ...action });
     }
 
-    class Tag2 extends PC {
-      constructor(props) {
-        super(props);
-      }
-      render() {
-        return (
-          <div>
-            <h2>Tag2</h2>
-            <div>{this.props.a}</div>
-            <Tag3 {...this.props} />
-          </div>
-        )
-      }
+    // ルートSaga定義　un*xにおける initに該当する　ここから分岐する
+    // takeEveryは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、同名のイベントを待ち続ける
+    // takeLatestは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、前回の処理を中断し、同名のイベントを待ち続ける
+    function* rootSaga() {
+      yield takeEvery("GET_URL", getURL); //同名のsagaに渡す際でもこう書くことで別々のスレッドになる
+      yield takeEvery(["GET_URL"], echoSaga); //何度でもforkできる
     }
 
-    class Tag3 extends BC {
-      constructor(props) {
-        super(props);
-      }
-      render() {
-        return (
-          <div>
-            <h3>Tag3</h3>
-            <div>{this.props.a}</div>
-          </div>
-        )
-      }
-    }
+    // Saga ミドルウェアを作成する
+    const sagaMiddleware = createSagaMiddleware();
+    const middlewares = applyMiddleware(sagaMiddleware);
 
-    const p = { a: "helloworld" };
+    // ストアの作成 第２引数にmiddlewareを登録し、store更新後 saga群へActionがコピーし渡される
+    let store = createStore(allReducer, middlewares);
 
-    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
-    ReactDOM.render(<Tag1 {...p} />, document.getElementById("app"));
+    // Saga を起動する
+    sagaMiddleware.run(rootSaga);
 
+    // reduxのstate監視 stateの値が更新されるごとにsubscribeが実行される 
+    store.subscribe(() => console.log({ store: "Store's value", ...store.getState() }));
+
+    const main = () => {
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "DEL_VAL" });
+      store.dispatch({ type: "GET_URL" });
+    };
+    main();
   </script>
 </body>
 

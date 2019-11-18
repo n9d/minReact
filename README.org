@@ -56,10 +56,13 @@
 
 - コンソールで開いた後リロードして確認すると、storeの変遷が見れる
 - コンソールで =ReduxSaga= を評価すると redux-sagaが持っているメソッド一覧が確認できる
+
 - Redux-Sagaでは、StoreにActionを適用した後、Storeの変更を感知するためにActionを契機としていることに注意すること
 - つまり人間（ユーザ）側では、ボタンに該当するコンポーネントによってStoreの変更を感知するが、Saga側ではコピーされたアクションがコレに当たる
 - したがって、「StoreはどのようなActionでも遷移する」（変化しない場合も恒等で遷移する）ことに注意
 - reducerの =switch= における =default= 部分がコレに当たる
+
+- 1saga=1userと覚える
 
 - runSaga :: これぐらいしか使わない
 - default :: nodeで使うときには createSagaMiddleware となる
@@ -70,11 +73,11 @@
 	- fork :: un*x のfork同様、プロセスを分岐させる
 	- take :: storeの観察契機として storeの次に渡された特定Actionをwatchする
 	- select :: storeを取得する。本来的にはselectの結果でsagaは動くべきだがコストが高いのでtakeがあるものと推測
-	- call :: promiseを実行し結果をpromiseから剥いてくれる(nonBlockingに書くのに必須)
+	- call :: promiseを実行し結果をpromiseから剥いてくれる(BlockingI/O的に書くのに必須)
 	- put :: storeにActionを投げて次の状態遷移を行わせる（put以外に内部システムとの通信手段を持たないようにすること）
 	- cancel :: process kill に該当
 
-- とはいえ、 =fork= + =while (true){ take ...;...}= 用にいくつか用意されている
+- とはいえ、 =fork(while(true){take("action");saga()}= 用にいくつか用意されている
 	- takeEvery :: 並列で処理を分岐(fork)した後、同名のイベントを待ち続ける(take)
 	- takeLatest :: 並列で処理を分岐(fork)した後、前回の処理を中断(cancel)し、同名のイベントを待ち続ける(take)
 	- =takeLatest(["AA","BB"],mySaga)= だと "AA" 処理中に "BB" が来たときに "AA" を中断する
@@ -83,14 +86,16 @@
 
 ** Sagaでhttpアクセス
 
-- 予定
+[[file:fetch.html][sagaでfetch]]
+
+- localにある =json/sample.json= を取得する
+- データを得た後、更に actionを発行し storeに格納していることに注意
 
 * React-Redux
 ** 最小構成
 
 [[file:react-redux-render-with-babel.html][React-Redux]]
 
-- 本当はデバッグ（ブラウザ上でのブレイクポイント設置）の観点からbabelを抜きたかったが、Providerの使い方がわからない
 - コンソールで開いた後リロードして確認すると、レンダリングのタイミング及びstoreの変遷が見れる
 - コンソールで =ReactRedux= を評価すると react-reduxが持っているメソッド一覧が確認できる
 
@@ -111,6 +116,9 @@
 ** propsオーバーライド（関数コンポーネント版）
 
 [[file:props-override-with-function-component.html][props-override-with-function-component]]
+
+- Tag3Aloneの =const [count, setCount] = React.useState(10)=  =const inc = () => { setCount(count + 1) }= という記述は超大事、この書き方をすると Tag3Baseは Reduxと容易に切替可能になる。
+
 
 ** 複数ドメインのstore
 
