@@ -135,7 +135,11 @@
 * React/Redux/Saga
 ** なんかつくる
 
-- 何作ろうか・・・
+[[file:react-redux-saga.html][全部入り]]
+
+- 全部の要素が入って200行
+- saga部分のせいで babelじゃないところがある
+
 
 * まとめ
 

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <style type="text/css">
+    <!--
+    div {
+      margin: 5px 5px;
+      border-style: solid;
+      border-width: 1px;
+    }
+
+    .tag3base {
+      border-color: blue;
+    }
+    -->
+  </style>
+  <title>react redux saga</title>
+  <script src="lib/react.development.js"></script>
+  <script src="lib/react-dom.development.js"></script>
+  <script src="lib/react-redux.js"></script>
+  <script src="lib/redux.js"></script>
+  <script src="lib/redux-saga.umd.js"></script>
+  <script src="lib/babel.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <p>Check console.</p>
+
+  <script type="text/javascript">
+    const applyMiddleware = Redux.applyMiddleware
+    const createStore = Redux.createStore
+    const combineReducers = Redux.combineReducers
+    const createSagaMiddleware = ReduxSaga.default
+    const call = ReduxSaga.effects.call
+    const put = ReduxSaga.effects.put
+    const takeEvery = ReduxSaga.effects.takeEvery
+    const takeLatest = ReduxSaga.effects.takeLatest
+    const takeLeading = ReduxSaga.effects.takeLeading
+    const throttle = ReduxSaga.effects.throttle
+
+    // reducer作成
+    function dbReducer(state = { data: { a: 0 } }, action) {
+      const val = action.value ? action.value : { error: "no_data" };
+      switch (action.type) {
+        case "PUT_VAL":
+          console.log("action PUT_VAL")
+          return { data: val };
+        case "DEL_VAL":
+          console.log(`action DEL_VAL`)
+          return { data: { a: 0 } };
+        default: //列挙されていないActionはstateをそのまま返すのに注意
+          return state;
+      }
+    }
+
+    // combineReducers
+    const allReducer = combineReducers({
+      db: dbReducer
+    });
+
+    // saga 
+    // rootSagaの記述方法によって起動される順序、個数、回数が異なることに注意
+    function* getURL(action) {
+      switch (action.type) {
+        case "GET_URL":
+          console.log("saga getURL")
+          data = yield call(() => fetch("json/sample.json").then(r => r.status == 200 ? r.json() : r));
+          yield put({ type: "PUT_VAL", value: data }); // putはstoreとの唯一の通信手段
+          return;
+      }
+    }
+
+    // saga その２
+    function* echoSaga(action) {
+      console.log({ action: "■ saga fire! ■", ...action });
+    }
+
+    // ルートSaga定義　un*xにおける initに該当する　ここから分岐する
+    // takeEveryは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、同名のイベントを待ち続ける
+    // takeLatestは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、前回の処理を中断し、同名のイベントを待ち続ける
+    function* rootSaga() {
+      yield takeLeading("GET_URL", getURL); //一度受け付けたら、処理中は受け付けない
+      //yield throttle(1000, "GET_URL", getURL); //一度受け付けたら、一秒間遅延させる
+      yield takeEvery(["GET_URL"], echoSaga); //何度でもforkできる
+    }
+
+    // Saga ミドルウェアを作成する
+    const sagaMiddleware = createSagaMiddleware();
+    const middlewares = applyMiddleware(sagaMiddleware);
+
+    // ストアの作成 第２引数にmiddlewareを登録し、store更新後 saga群へActionがコピーし渡される
+    let store = createStore(allReducer, middlewares);
+
+    // Saga を起動する
+    sagaMiddleware.run(rootSaga);
+
+    // reduxのstate監視 stateの値が更新されるごとにsubscribeが実行される 
+    store.subscribe(() => console.log({ store: "Store's value", ...store.getState() }));
+  </script>
+
+  <script type="text/babel">
+
+    class RC extends React.Component { // コンポーネントがレンダリングされるときにconsoleに出力
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`■ React.Componet ${this.constructor.name} Mount ■`); }
+      componentDidUpdate() { console.log(`■ React.Componet ${this.constructor.name} Update ■`); }
+      componentWillUnmount() { console.log(`■ React.Componet ${this.constructor.name} Unmunt ■`); }
+    }
+
+    class PC extends React.PureComponent { // コンポーネントがレンダリングされるときにconsoleに出力
+      constructor(props) { super(props); }
+      componentDidMount() { console.log(`● PureReact.Componet ${this.constructor.name} Mount ●`); }
+      componentDidUpdate() { console.log(`● PureReact.Componet ${this.constructor.name} Update ●`); }
+      componentWillUnmount() { console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`); }
+    }
+
+    // React ここから
+    class Tag1 extends RC {
+      constructor(props) { super(props); }
+      render() { return (<div><h1>Tag1</h1><Tag2 /></div>) }
+    }
+    class Tag2 extends RC {
+      constructor(props) { super(props); }
+      render() {
+        return (
+          <div>
+            <h2>Tag2</h2>
+            <h3>tag3 alone</h3><Tag3Alone />
+            <h3>tag3 store</h3><Tag3Redux />
+          </div>
+        )
+      }
+    }
+    class Tag3Base extends RC { // このコンポーネントの書き方によって 単独でもreduxでも動くようになる
+      constructor(props) { super(props) }
+      render() {
+        return (
+          <div className="tag3base">
+            <h3>Tag3</h3>
+            {console.log(this.props)}
+            {`data=${this.props.data.a}`}
+            <br />
+            <button onClick={() => this.props.get_url()}>json get</button>
+            <button onClick={() => this.props.reset()}>reset</button>
+            <Tag4 />
+          </div>
+        )
+      }
+    }
+    class Tag3Alone extends RC { // このコンポーネントはTag3Baseのテストとして機能する
+      constructor(props) {
+        super(props);
+        this.state = { data: { a: 10 } };
+      }
+      get_url = () => { this.setState(prev => { return { data: { a: 11 } } }) }
+      reset = () => { this.setState(prev => { return { data: { a: 10 } } }) }
+      render() {
+        return (
+          <div>
+            <h3>Tag3Test</h3>
+            <Tag3Base data={this.state.data} get_url={this.get_url} reset={this.reset} />
+          </div>
+        )
+      }
+    }
+    class Tag4 extends PC { // tag3の下でレンダリングしているかどうか判定する
+      constructor(props) { super(props); }
+      render() { return (<div><h4>Tag4</h4></div>) }
+    }
+    // ReactRedux.connectは React.Componentをラップしたコンポーネントを返す（ここでstate変化時にrenderしている模様）
+    const Tag3Redux = (ReactRedux.connect( //こいつが Tag3Aloneの関数を上書きすればいい
+      store => { return { data: store.db.data } }, // store->propsへの写像 props.c はオーバライドされる
+      dispatch => {
+        return { // dispath -> propsへの写像
+          get_url: () => dispatch({ type: 'GET_URL' }),
+          reset: () => dispatch({ type: 'DEL_VAL' }),
+        }
+      }
+    ))(Tag3Base)
+
+    const Provider = ReactRedux.Provider;
+    const rootElement = document.getElementById("root");
+
+    ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>, rootElement)
+    // React ここまで
+
+  </script>
+
+  <script type="text/javascript">
+    const main = () => {
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "DEL_VAL" });
+      store.dispatch({ type: "GET_URL" }); // 最初のアクションが実行中なのでコレ以降はgetURL sagaは実行されない
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "GET_URL" });
+      store.dispatch({ type: "GET_URL" });
+    };
+    //main();
+  </script>
+
+</body>
+
+</html>
