@@ -23,6 +23,7 @@
   <script src="lib/redux.js"></script>
   <script src="lib/redux-saga.umd.js"></script>
   <script src="lib/babel.js"></script>
+  <script src="lib/polyfill.js"></script>
 </head>
 
 <body>
@@ -30,7 +31,7 @@
 
   <p>Check console.</p>
 
-  <script type="text/javascript">
+  <script type="text/babel" data-presets="es2017,react">
     const applyMiddleware = Redux.applyMiddleware
     const createStore = Redux.createStore
     const combineReducers = Redux.combineReducers
@@ -62,7 +63,7 @@
       db: dbReducer
     });
 
-    // saga 
+    // saga
     // rootSagaの記述方法によって起動される順序、個数、回数が異なることに注意
     function* getURL(action) {
       switch (action.type) {
@@ -79,7 +80,7 @@
       console.log({ action: "■ saga fire! ■", ...action });
     }
 
-    // ルートSaga定義　un*xにおける initに該当する　ここから分岐する
+    // ルートSaga定義 un*xにおける initに該当する ここから分岐する
     // takeEveryは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、同名のイベントを待ち続ける
     // takeLatestは並列で処理を分岐(fork)した後、該当するイベントを引数のsagaに渡し、前回の処理を中断し、同名のイベントを待ち続ける
     function* rootSaga() {
@@ -98,12 +99,10 @@
     // Saga を起動する
     sagaMiddleware.run(rootSaga);
 
-    // reduxのstate監視 stateの値が更新されるごとにsubscribeが実行される 
+    // reduxのstate監視 stateの値が更新されるごとにsubscribeが実行される
     store.subscribe(() => console.log({ store: "Store's value", ...store.getState() }));
-  </script>
 
-  <script type="text/babel">
-
+    // React ここから
     class RC extends React.Component { // コンポーネントがレンダリングされるときにconsoleに出力
       constructor(props) { super(props); }
       componentDidMount() { console.log(`■ React.Componet ${this.constructor.name} Mount ■`); }
@@ -118,7 +117,6 @@
       componentWillUnmount() { console.log(`● PureReact.Componet ${this.constructor.name} Unmunt ●`); }
     }
 
-    // React ここから
     class Tag1 extends RC {
       constructor(props) { super(props); }
       render() { return (<div><h1>Tag1</h1><Tag2 /></div>) }
@@ -188,9 +186,6 @@
     ReactDOM.render(<Provider store={store}> <Tag1 /></Provider>, rootElement)
     // React ここまで
 
-  </script>
-
-  <script type="text/javascript">
     const main = () => {
       store.dispatch({ type: "GET_URL" });
       store.dispatch({ type: "DEL_VAL" });

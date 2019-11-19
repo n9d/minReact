@@ -133,13 +133,10 @@
 - 複数ドメインのstoreを領域を区切ってそれぞれコンポーネントにマッピングしても関係のある範囲でしか再描画しない。(react面目躍如)
 
 * React/Redux/Saga
-** なんかつくる
 
 [[file:react-redux-saga.html][全部入り]]
 
 - 全部の要素が入って200行
-- saga部分のせいで babelじゃないところがある
-
 
 * まとめ
 
@@ -253,11 +250,13 @@ code --install-extensions SimonSiefke.svg-preview
 mkdir lib
 npm init -y
 npm install babel-standalone
+npm install babel-polyfill
 npm install react react-dom
 npm install redux
 npm install redux-saga
 npm install reactx-redux
 cp node_modules/babel-standalone/babel.js lib
+cp node_modules/babel-polyfill/dist/polyfill.js lib
 cp node_modules/react/umd/react.development.js lib
 cp node_modules/react-dom/umd/react-dom.development.js lib
 cp node_modules/redux/dist/redux.js lib
