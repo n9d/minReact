@@ -137,10 +137,18 @@
 [[file:react-redux-saga.html][全部入り]]
 
 - 全部の要素が入って200行
+- inlineのbabelでgenerator動かすのすごく苦労した =npm install babel-standalone babel-polyfill=
 
+#+BEGIN_SRC js :exports both
+  <script src="lib/babel.js"></script>
+  <script src="lib/polyfill.js"></script>
+  <script type="text/babel" data-presets="es2017,react">
+
+  </script>
+#+END_SRC
 * まとめ
 
-- React/Reduc/SagaはMVCである
+- React/Redux/SagaはMVCである
 - Reactは View を担当し、Controllerとしては ReduxのActionを発行するのみ
 - Reduxは Model を担当し、Action以外の変更を受け付けない。
 - Sagaは疑似マルチスレッドにより全ての非同期処理を担当する。Storeに対するアクターモデルであるとも言える
