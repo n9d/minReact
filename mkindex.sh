@@ -3,6 +3,7 @@
 cat << HEAD > index.html
 <html>
   <head>
+    <meta charset="utf-8"/>
     <title>最小構成でReactJS</title>
   </head>
   <body>
